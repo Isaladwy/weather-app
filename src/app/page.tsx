@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getCurrentWeather } from '@/lib/weatherApi';
 import WeatherDisplay from '@/components/WeatherDisplay';
 import { WeatherData } from '@/types/weather';
@@ -10,6 +10,9 @@ export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [defaultCitiesWeather, setDefaultCitiesWeather] = useState<WeatherData[]>([]);
+  const [defaultCitiesLoading, setDefaultCitiesLoading] = useState(true);
+  const [defaultCitiesError, setDefaultCitiesError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,9 +32,29 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const fetchDefaultCitiesWeather = async () => {
+      setDefaultCitiesLoading(true);
+      setDefaultCitiesError(null);
+      try {
+        const [alexandriaWeather, dammamWeather] = await Promise.all([
+          getCurrentWeather('Alexandria'),
+          getCurrentWeather('Dammam')
+        ]);
+        setDefaultCitiesWeather([alexandriaWeather, dammamWeather]);
+      } catch (error) {
+        setDefaultCitiesError('Failed to fetch default cities weather data.');
+      } finally {
+        setDefaultCitiesLoading(false);
+      }
+    };
+
+    fetchDefaultCitiesWeather();
+  }, []);
+
   return (
     <main className="min-h-screen p-4 md:p-8 bg-gray-100 dark:bg-gray-900">
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-center mb-8 dark:text-white">
           Weather App
         </h1>
@@ -58,6 +81,23 @@ export default function Home() {
           isLoading={isLoading}
           error={error}
         />
+
+        {defaultCitiesLoading ? (
+          <div className="text-center p-4">Loading default cities weather...</div>
+        ) : defaultCitiesError ? (
+          <div className="text-center text-red-500 p-4">{defaultCitiesError}</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {defaultCitiesWeather.map((weather, index) => (
+              <WeatherDisplay
+                key={index}
+                weatherData={weather}
+                isLoading={false}
+                error={null}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
