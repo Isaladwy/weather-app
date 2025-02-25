@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { WeatherData } from '@/types/weather';
+import Image from 'next/image';
 
 interface WeatherDisplayProps {
   weatherData: WeatherData | null;
@@ -9,16 +10,20 @@ interface WeatherDisplayProps {
   error: string | null;
 }
 
-export default function WeatherDisplay({ weatherData, isLoading, error }: WeatherDisplayProps) {
+export default function WeatherDisplay({
+  weatherData,
+  isLoading,
+  error,
+}: WeatherDisplayProps) {
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
-  if (isLoading) return <div className="text-center p-4">Loading weather data...</div>;
+  if (isLoading)
+    return <div className="text-center p-4">Loading weather data...</div>;
   if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
   if (!weatherData) return null;
 
-  const temperature = unit === 'C' 
-    ? weatherData.main.temp 
-    : (weatherData.main.temp * 9/5) + 32;
+  const temperature =
+    unit === 'C' ? weatherData.main.temp : (weatherData.main.temp * 9) / 5 + 32;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-sm w-full mx-auto">
@@ -38,16 +43,22 @@ export default function WeatherDisplay({ weatherData, isLoading, error }: Weathe
           </button>
         </div>
         <div className="flex items-center justify-center mb-4">
-          <img
+          <Image
             src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
             alt={weatherData.weather[0].description}
-            className="w-16 h-16"
+            // className="w-16 h-16"
+            width={16}
+            height={16}
           />
-          <span className="text-lg capitalize">{weatherData.weather[0].description}</span>
+          <span className="text-lg capitalize">
+            {weatherData.weather[0].description}
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p>Feels like: {Math.round(weatherData.main.feels_like)}°{unit}</p>
+            <p>
+              Feels like: {Math.round(weatherData.main.feels_like)}°{unit}
+            </p>
             <p>Humidity: {weatherData.main.humidity}%</p>
           </div>
           <div>
