@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: 'Get real-time weather updates for cities worldwide',
   icons: {
     icon: '/weather-icon.png',
+    shortcut: '/weather-icon.png',
+    apple: '/weather-icon.png',
+    other: {
+      rel: 'apple-touch-icon',
+      url: '/weather-icon.png',
+    },
   },
 };
 
