@@ -5,6 +5,28 @@ import { getCurrentWeather } from '@/lib/weatherApi';
 import WeatherDisplay from '@/components/WeatherDisplay';
 import { WeatherData } from '@/types/weather';
 
+const cityNameMapping: Record<string, string> = {
+  'الإسكندرية': 'Alexandria',
+  'الدمام': 'Dammam',
+  'القاهرة': 'Cairo',
+  'الرياض': 'Riyadh',
+  'جدة': 'Jeddah',
+  'مكة': 'Mecca',
+  'المدينة': 'Medina',
+  'الخبر': 'Khobar',
+  'أبوظبي': 'Abu Dhabi',
+  'دبي': 'Dubai',
+  'الشارقة': 'Sharjah',
+  'الدوحة': 'Doha',
+  'المنامة': 'Manama',
+  'مسقط': 'Muscat',
+  'الكويت': 'Kuwait City',
+  'عمان': 'Amman',
+  'بيروت': 'Beirut',
+  'بغداد': 'Baghdad',
+  'دمشق': 'Damascus'
+};
+
 export default function Home() {
   const [city, setCity] = useState('');
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -26,7 +48,9 @@ export default function Home() {
     setError(null);
 
     try {
-      const data = await getCurrentWeather(city);
+      // Check if the input is an Arabic city name and convert it to English
+      const searchCity = cityNameMapping[city.trim()] || city.trim();
+      const data = await getCurrentWeather(searchCity);
       setWeatherData(data);
     } catch {
       setError('Failed to fetch weather data. Please try again.');

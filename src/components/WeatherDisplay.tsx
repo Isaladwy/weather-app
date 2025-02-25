@@ -4,6 +4,28 @@ import { useState } from 'react';
 import { WeatherData } from '@/types/weather';
 import Image from 'next/image';
 
+const cityNameMapping: Record<string, string> = {
+  الإسكندرية: 'Alexandria',
+  الدمام: 'Dammam',
+  القاهرة: 'Cairo',
+  الرياض: 'Riyadh',
+  جدة: 'Jeddah',
+  مكة: 'Mecca',
+  المدينة: 'Medina',
+  الخبر: 'Khobar',
+  أبوظبي: 'Abu Dhabi',
+  دبي: 'Dubai',
+  الشارقة: 'Sharjah',
+  الدوحة: 'Doha',
+  المنامة: 'Manama',
+  مسقط: 'Muscat',
+  الكويت: 'Kuwait City',
+  عمان: 'Amman',
+  بيروت: 'Beirut',
+  بغداد: 'Baghdad',
+  دمشق: 'Damascus',
+};
+
 interface WeatherDisplayProps {
   weatherData: WeatherData | null;
   isLoading: boolean;
@@ -30,6 +52,14 @@ export default function WeatherDisplay({
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">
           {weatherData.name}, {weatherData.sys.country}
+          <div className="text-lg mt-1 font-normal text-gray-600 dark:text-gray-400">
+            {
+              Object.entries(cityNameMapping).find(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                ([arabic, english]) => english === weatherData.name
+              )?.[0]
+            }
+          </div>
         </h2>
         <div className="flex items-center justify-center gap-4 mb-4">
           <span className="text-4xl font-bold">
