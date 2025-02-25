@@ -10,9 +10,13 @@ export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [defaultCitiesWeather, setDefaultCitiesWeather] = useState<WeatherData[]>([]);
+  const [defaultCitiesWeather, setDefaultCitiesWeather] = useState<
+    WeatherData[]
+  >([]);
   const [defaultCitiesLoading, setDefaultCitiesLoading] = useState(true);
-  const [defaultCitiesError, setDefaultCitiesError] = useState<string | null>(null);
+  const [defaultCitiesError, setDefaultCitiesError] = useState<string | null>(
+    null
+  );
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +43,10 @@ export default function Home() {
       try {
         const [alexandriaWeather, dammamWeather] = await Promise.all([
           getCurrentWeather('Alexandria'),
-          getCurrentWeather('Dammam')
+          getCurrentWeather('Dammam'),
         ]);
         setDefaultCitiesWeather([alexandriaWeather, dammamWeather]);
-      } catch (error) {
+      } catch {
         setDefaultCitiesError('Failed to fetch default cities weather data.');
       } finally {
         setDefaultCitiesLoading(false);
@@ -83,9 +87,13 @@ export default function Home() {
         />
 
         {defaultCitiesLoading ? (
-          <div className="text-center p-4">Loading default cities weather...</div>
+          <div className="text-center p-4">
+            Loading default cities weather...
+          </div>
         ) : defaultCitiesError ? (
-          <div className="text-center text-red-500 p-4">{defaultCitiesError}</div>
+          <div className="text-center text-red-500 p-4">
+            {defaultCitiesError}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {defaultCitiesWeather.map((weather, index) => (
