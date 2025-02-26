@@ -77,10 +77,24 @@ export default function Home() {
     setSuggestions(matchingSuggestions);
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = async (suggestion: string) => {
     const cityName = suggestion.split(' (')[0];
     setCity(cityName);
     setSuggestions([]);
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const searchCity = cityNameMapping[cityName.trim()] || cityName.trim();
+      const data = await getCurrentWeather(searchCity);
+      setWeatherData(data);
+    } catch {
+      setError('Failed to fetch weather data. Please try again.');
+      setWeatherData(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
