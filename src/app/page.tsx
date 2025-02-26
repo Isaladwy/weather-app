@@ -29,16 +29,13 @@ const cityNameMapping: Record<string, string> = {
 
 export default function Home() {
   const [city, setCity] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [defaultCitiesWeather, setDefaultCitiesWeather] = useState<
-    WeatherData[]
-  >([]);
+  const [defaultCitiesWeather, setDefaultCitiesWeather] = useState<WeatherData[]>([]);
   const [defaultCitiesLoading, setDefaultCitiesLoading] = useState(true);
-  const [defaultCitiesError, setDefaultCitiesError] = useState<string | null>(
-    null
-  );
+  const [defaultCitiesError, setDefaultCitiesError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +43,9 @@ export default function Home() {
 
     setIsLoading(true);
     setError(null);
+    setSuggestions([]);
 
     try {
-      // Check if the input is an Arabic city name and convert it to English
       const searchCity = cityNameMapping[city.trim()] || city.trim();
       const data = await getCurrentWeather(searchCity);
       setWeatherData(data);
@@ -58,6 +55,32 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    setCity(input);
+
+    if (input.trim() === '') {
+      setSuggestions([]);
+      return;
+    }
+
+    const matchingSuggestions = Object.entries(cityNameMapping)
+      .filter(([arabic, english]) => 
+        arabic.toLowerCase().includes(input.toLowerCase()) ||
+        english.toLowerCase().includes(input.toLowerCase())
+      )
+      .map(([arabic, english]) => `${english} (${arabic})`)
+      .slice(0, 5);
+
+    setSuggestions(matchingSuggestions);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    const cityName = suggestion.split(' (')[0];
+    setCity(cityName);
+    setSuggestions([]);
   };
 
   useEffect(() => {
@@ -87,14 +110,29 @@ export default function Home() {
           Weather App
         </h1>
 
-        <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto">
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Enter city name..."
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-          />
+        <form onSubmit={handleSearch} className="flex gap-2 max-w-md mx-auto relative">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={city}
+              onChange={handleInputChange}
+              placeholder="Enter city name..."
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+            />
+            {suggestions.length > 0 && (
+              <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button
             type="submit"
             disabled={isLoading}
