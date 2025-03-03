@@ -47,11 +47,6 @@ export default function WeatherDisplay({
   const temperature =
     unit === 'C' ? weatherData.main.temp : (weatherData.main.temp * 9) / 5 + 32;
 
-  const feelsLike =
-    unit === 'C'
-      ? weatherData.main.feels_like
-      : (weatherData.main.feels_like * 9) / 5 + 32;
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-sm w-full mx-auto">
       <div className="text-center">
@@ -92,7 +87,7 @@ export default function WeatherDisplay({
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <p>
-              Feels like: {Math.round(feelsLike)}°{unit}
+              Feels like: {Math.round(weatherData.main.feels_like)}°{unit}
             </p>
             <p>Humidity: {weatherData.main.humidity}%</p>
           </div>
